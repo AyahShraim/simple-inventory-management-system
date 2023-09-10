@@ -50,6 +50,18 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 
         }
 
+        public string ShowProductDetails()
+        {
+            StringBuilder stringBuilder= new StringBuilder();
+            stringBuilder.AppendLine($"Product ID: {Id.ToString()}");
+            stringBuilder.AppendLine($"Product Name: {Name}");
+            stringBuilder.AppendLine($"Product Price: {Price.ToString()}");
+            stringBuilder.AppendLine($"Product Quantity {Quantity.ToString()}");
+
+            return stringBuilder.ToString();
+
+        }
+
 
        
 

@@ -37,6 +37,17 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 
         }
 
+        public void ViewAllProducts()
+        {
+            foreach(Product product in products)
+            {
+                
+                Console.WriteLine(product.ShowProductDetails());
+       
+            }
+
+
+        }
 
 
 
