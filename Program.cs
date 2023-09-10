@@ -1,2 +1,1 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World! This is simple inventory management system");
+﻿Console.WriteLine("Hello, World! This is simple inventory management system");
