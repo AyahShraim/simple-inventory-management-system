@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleInventoryManagementSystem.ProductsManegements
+﻿namespace SimpleInventoryManagementSystem.ProductsManegements
 {
     internal class Inventory
     {
@@ -81,6 +74,23 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
                 Console.WriteLine("No such product! Recheck the name and try again!");
             }
         }
+
+        public void DeleteProduct()
+        {
+            Product? product = SearchProduct();
+
+            if (product != null)
+            {
+                products.Remove(product);
+                Console.WriteLine("Product deleted Sucessfully!");
+            }
+            else
+            {
+                Console.WriteLine("No such product! Recheck the name and try again!");
+            }
+        }
+
+
 
 
     }
