@@ -47,17 +47,7 @@
         {
             Console.WriteLine("Enter the product name:");
             string ?name =Console.ReadLine();
-            foreach(Product product in products)
-            {
-                if (product.Name.ToLower().Equals(name?.ToLower()))
-                {
-                    
-                    return product;
-                    
-                }
-             
-            }
-            return null;
+            return products.Find(x => x.Name == name);
 
         }
 
