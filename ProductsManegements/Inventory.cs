@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +50,37 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 
         }
 
+        public Product? SearchProduct()
+        {
+            Console.WriteLine("Enter the product name:");
+            string ?name =Console.ReadLine();
+            foreach(Product product in products)
+            {
+                if (product.Name.ToLower().Equals(name?.ToLower()))
+                {
+                    
+                    return product;
+                    
+                }
+             
+            }
+            return null;
+
+        }
+
+        public void SearchDisplayProduct()
+        {
+            Product? product = SearchProduct();
+         
+            if (product != null)
+            {
+                Console.WriteLine(product.ShowProductDetails());
+            }
+            else
+            {
+                Console.WriteLine("No such product! Recheck the name and try again!");
+            }
+        }
 
 
     }
