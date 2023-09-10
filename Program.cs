@@ -1,2 +1,1 @@
 ﻿using SimpleInventoryManagementSystem.ProductsManegements;
-

@@ -1,4 +1,10 @@
-﻿namespace SimpleInventoryManagementSystem.ProductsManegements
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+
+namespace SimpleInventoryManagementSystem.ProductsManegements
 {
     internal class Inventory
     {
@@ -80,7 +86,77 @@
             }
         }
 
+        public void UpdateProduct()
+        {
+            Product? product=SearchProduct();
+            //string pattern = @"^(?![YyNn]$).*$";
+            int input =0;
+            if (product != null)
+            {
+               void menu()
+                {
+                    Console.WriteLine("************\n***CHOOSE***\n************");
+                    int i = 1;
+                    foreach (PropertyInfo p in product.GetType().GetProperties())
+                    {
+                        if (p.Name == "Id") continue;
+                        Console.WriteLine($"{i}.Edit {p.Name}");
+                        i++;
+                    }
+                }
+                while (true)
+                {
+                    menu();
+                    if (int.TryParse(Console.ReadLine(), out input))
+                    {
+                        switch (input)
+                        {
+                            case 1:
+                                string name = Console.ReadLine() ?? string.Empty;
+                                product.Name = name;
 
+                                break;
+
+                            case 2:
+                                decimal price;
+                                do
+                                {
+                                    Console.WriteLine("Enter valid price: ");
+
+                                } while (!decimal.TryParse(Console.ReadLine(), out price));
+                                product.Price = price;
+
+                                break;
+
+                            case 3:
+                                int quantity;
+                                do
+                                {
+                                    Console.WriteLine("Enter the quantity of the product: ");
+
+                                } while (!int.TryParse(Console.ReadLine(), out quantity));
+                                product.Quantity = quantity;
+
+                                break;
+
+                            default:
+
+                                Console.WriteLine("Not Valid");
+                                break;
+
+
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("No such product! Recheck the name and try again!");
+            }
+
+
+        }
 
 
     }
