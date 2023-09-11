@@ -8,7 +8,7 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 {
     internal class Inventory
     {
-        private static List<Product> products =new();
+        internal static List<Product> products =new();
 
         public void AddProduct()
         {
@@ -17,31 +17,41 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
             int quantity = 0;
             Product? product=null;
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Enter the name of the product: ");
+            Console.ResetColor();
             name = Console.ReadLine() ?? string.Empty;
             do
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Enter the price of the product: ");
+                Console.ResetColor();
 
             } while (!decimal.TryParse(Console.ReadLine(), out price));
             do
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Enter the quantity of the product: ");
+                Console.ResetColor();
 
             } while (!int.TryParse(Console.ReadLine(), out quantity));
 
             product=new Product(name, price, quantity);
             products.Add(product);
-            Console.WriteLine($"A new product {product.Name} is added successfully! ");
 
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"A new product {product.Name} is added successfully! ");
+            Console.ResetColor();
         }
 
         public void ViewAllProducts()
         {
+           
             foreach(Product product in products)
             {
-                
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("-----------------------");
+                Console.ResetColor();
                 Console.WriteLine(product.ShowProductDetails());
        
             }
@@ -51,7 +61,9 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 
         public Product? SearchProduct()
         {
+            Console.ForegroundColor= ConsoleColor.Green;
             Console.WriteLine("Enter the product name:");
+            Console.ResetColor();
             string ?name =Console.ReadLine();
             return products.Find(x => x.Name == name);
 
@@ -67,7 +79,9 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No such product! Recheck the name and try again!");
+                Console.ResetColor();
             }
         }
 
@@ -78,11 +92,16 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
             if (product != null)
             {
                 products.Remove(product);
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Product deleted Sucessfully!");
+                Console.ResetColor();
             }
             else
             {
+
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No such product! Recheck the name and try again!");
+                Console.ResetColor();
             }
         }
 
@@ -95,7 +114,11 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
             {
                void menu()
                 {
-                    Console.WriteLine("************\n***CHOOSE***\n************");
+                    Console.WriteLine(@"
+------------------------
+Choose what to modify ->
+------------------------
+");
                     int i = 1;
                     foreach (PropertyInfo p in product.GetType().GetProperties())
                     {
@@ -103,6 +126,7 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
                         Console.WriteLine($"{i}.Edit {p.Name}");
                         i++;
                     }
+                    Console.WriteLine("0.Finish editing ");
                 }
                 while (true)
                 {
@@ -114,7 +138,9 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
                             case 1:
                                 string name = Console.ReadLine() ?? string.Empty;
                                 product.Name = name;
-
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Product name edited successfully! ");
+                                Console.ResetColor();
                                 break;
 
                             case 2:
@@ -125,6 +151,9 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 
                                 } while (!decimal.TryParse(Console.ReadLine(), out price));
                                 product.Price = price;
+                                Console.ForegroundColor= ConsoleColor.Green;
+                                Console.WriteLine("Price edited successfully! ");
+                                Console.ResetColor();
 
                                 break;
 
@@ -136,8 +165,12 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
 
                                 } while (!int.TryParse(Console.ReadLine(), out quantity));
                                 product.Quantity = quantity;
-
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Quantity edited successfully! ");
+                                Console.ResetColor();
                                 break;
+                            case 0:
+                                return;
 
                             default:
 
@@ -152,7 +185,9 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No such product! Recheck the name and try again!");
+                Console.ResetColor();
             }
 
 
