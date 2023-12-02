@@ -1,55 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
-namespace SimpleInventoryManagementSystem.ProductsManegements
+namespace SimpleInventoryManagementSystem.ProductsManagement
 {
     public class Product
     {
-        private static int nextId = 1;
-        private string name = "";
-        private int quantity;
-        private decimal price;
-
-
+        private static int _nextId = 1;
         public int Id { get; private set; }
-        public string Name
-        {
-
-            get { return name; }
-            set { name = value; }
-
-        }
-
-        public int Quantity
-        {
-            get { return quantity; }
-            set
-            {
-                if (value >= 0) quantity = value;
-                else quantity = 0;
-            }
-        }
-
-        public decimal Price
-        {
-            get { return price; }
-            set { price = value; }
-
-        }
-
-        //constructor 
+        public string Name { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
         public Product(string name, decimal price, int quantity)
         {
             Name = name;
             Price = price;
             Quantity = quantity;
-            Id = nextId++;
-
+            Id = _nextId++;
         }
-
         public string ShowProductDetails()
         {
             StringBuilder stringBuilder= new StringBuilder();
@@ -57,19 +23,7 @@ namespace SimpleInventoryManagementSystem.ProductsManegements
             stringBuilder.AppendLine($"Product Name: {Name}");
             stringBuilder.AppendLine($"Product Price: {Price.ToString()}");
             stringBuilder.AppendLine($"Product Quantity {Quantity.ToString()}");
-
             return stringBuilder.ToString();
-
         }
-
-
-       
-
-
-
-
     }
-
-
-
 }
