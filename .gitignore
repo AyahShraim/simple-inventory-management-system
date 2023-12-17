@@ -582,3 +582,6 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,visualstudio
 '.vs/SimpleInventoryManagementSystem/FileContentIndex/*.vsidx' 
+'SimpleInventoryManagementSystem.csproj' 
+'bin/' 
+'obj/' 
