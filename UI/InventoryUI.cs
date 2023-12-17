@@ -17,9 +17,10 @@ namespace SimpleInventoryManagementSystem.UI
             string name = ReadProductName();
             int quantity = ReadProductQuantity();
             decimal price = ReadProductPrice();
+            CurrencyType currency = ReadProductCurrency();
             try
             {
-                Product newProduct = new Product(name, quantity, price);
+                Product newProduct = new Product(name, quantity, price, currency);
                 if (IsValidProduct(newProduct))
                 {
                     bool isSuccess = _inventory.AddProduct(newProduct);
@@ -57,6 +58,25 @@ namespace SimpleInventoryManagementSystem.UI
                 _writer.Write("Invalid input. Price must be decimal.Try again:");
             }
             return price;
+        }
+
+        private CurrencyType ReadProductCurrency()
+        {
+            _writer.Write("Enter product currency (USD, EUR, GBP): ");
+
+            while (true)
+            {
+                string input = Console.ReadLine()?.Trim().ToUpper(); // Convert to uppercase for case-insensitivity
+                if (TryParseCurrency(input, out var currency))
+                {
+                    return currency;
+                }
+                _writer.Write("Invalid input. Please enter a valid currency code.");
+            }
+        }
+        private bool TryParseCurrency(string input, out CurrencyType currency)
+        {
+            return Enum.TryParse(input, true, out currency) && Enum.IsDefined(typeof(CurrencyType), currency);
         }
         private bool IsValidProduct(Product product)
         {
@@ -117,10 +137,11 @@ namespace SimpleInventoryManagementSystem.UI
         }
         private Product ReadUpdatedProduct()
         {
-            string productName = ReadProductName();
-            int productQuantity = ReadProductQuantity();
-            decimal productPrice = ReadProductPrice();
-            return new Product(productName, productQuantity, productPrice);
+            string name = ReadProductName();
+            int quantity = ReadProductQuantity();
+            decimal price = ReadProductPrice();
+            CurrencyType currency = ReadProductCurrency();
+            return new Product(name, quantity, price, currency);
         }
         private void UpdateProductInfo(Product productToUpdate, Product updatedProduct)
         {

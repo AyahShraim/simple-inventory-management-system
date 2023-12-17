@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SimpleInventoryManagementSystem.Utilities;
+using System.ComponentModel.DataAnnotations;
 
 namespace SimpleInventoryManagementSystem.ProductsManagement
 {
@@ -16,11 +17,14 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         [Range(0.0, double.MaxValue, ErrorMessage = "Price can't be negative value!")]
         public decimal Price { get; set; }
 
-        public Product(string name, int quantity, decimal price)
+        public CurrencyType Currency { get; set; } = CurrencyType.USD;
+
+        public Product(string name, int quantity, decimal price, CurrencyType currency)
         {
             Name = name;
             Quantity = quantity;
             Price = price;
+            Currency = currency;
             Id = _nextId++;
         }
         public int GetProductId()
@@ -29,7 +33,7 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         }
         public override string ToString()
         {
-              return $"Product ID: {Id} \nName: {Name} \nPrice: {Price} \nQuantity: {Quantity}";
+              return $"Product ID: {Id} \nName: {Name} \nPrice: {Price} {Currency} \nQuantity: {Quantity}";
         }
         public static List<ValidationResult> Validate(Product product)
         {
