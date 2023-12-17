@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SimpleInventoryManagementSystem.ProductsManagement
 {
@@ -6,24 +6,37 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
     {
         private static int _nextId = 1;
         public int Id { get; private set; }
-        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "The Product name is required!")]
+        public string Name { get; set; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "Quantity can't be negative value!")]
         public int Quantity { get; set; }
+
+        [Range(0.0, double.MaxValue, ErrorMessage = "Price can't be negative value!")]
         public decimal Price { get; set; }
-        public Product(string name, decimal price, int quantity)
+
+        public Product(string name, int quantity, decimal price)
         {
             Name = name;
-            Price = price;
             Quantity = quantity;
+            Price = price;
             Id = _nextId++;
         }
-        public string ShowProductDetails()
+        public int GetProductId()
         {
-            StringBuilder stringBuilder= new StringBuilder();
-            stringBuilder.AppendLine($"Product ID: {Id.ToString()}");
-            stringBuilder.AppendLine($"Product Name: {Name}");
-            stringBuilder.AppendLine($"Product Price: {Price.ToString()}");
-            stringBuilder.AppendLine($"Product Quantity {Quantity.ToString()}");
-            return stringBuilder.ToString();
+            return Id;
+        }
+        public override string ToString()
+        {
+              return $"Product ID: {Id} \nName: {Name} \nPrice: {Price} \nQuantity: {Quantity}";
+        }
+        public static List<ValidationResult> Validate(Product product)
+        {
+            var validationResults = new List<ValidationResult>();
+            var context = new ValidationContext(product, serviceProvider: null, items: null);
+            Validator.TryValidateObject(product, context, validationResults, validateAllProperties: true);
+            return validationResults;
         }
     }
 }
