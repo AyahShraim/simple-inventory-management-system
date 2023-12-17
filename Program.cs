@@ -45,10 +45,10 @@ Select an action to start ->
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("Your Choice is:");
         Console.ForegroundColor = ConsoleColor.White;
-        HandleuserInput();
+        HandleUserInput();
     }
 }
-void HandleuserInput()
+void HandleUserInput()
 {
     string userSelection = Console.ReadLine()?.Trim();
     if (Enum.TryParse(userSelection, out MenuChoice userChoice))
