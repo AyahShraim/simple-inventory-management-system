@@ -86,6 +86,14 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             connection.Close();
             return product;
         }
+        public List<Product> GetAllProducts()
+        {
+            using SqlConnection connection = OpenConnection();
+            string selectQuery = "SELECT * FROM Product";
+            List<Product> products = connection.Query<Product>(selectQuery).ToList();
+            connection.Close();
+            return products;
+        }
     }
 }
 
