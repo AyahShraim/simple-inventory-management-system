@@ -40,7 +40,15 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             connection.Close();
             return existingProductCount > 0;
         }
-
+        public bool DeleteProduct(string name)
+        {
+            using SqlConnection connection = OpenConnection();
+            string deleteQuery = "DELETE FROM Product WHERE Name = @Name";
+            var parameters = new { Name = name };
+            int rowsAffected = connection.Execute(deleteQuery, parameters);
+            connection.Close();
+            return rowsAffected > 0;          
+        }
     }
 }
 
