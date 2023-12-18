@@ -49,6 +49,34 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             connection.Close();
             return rowsAffected > 0;          
         }
+        public bool UpdateProduct(string oldName, Product updatedProduct)
+        {
+            if (!IsExistProduct(updatedProduct.Name))
+            {
+                var parameters = new
+                {
+                    updatedName = updatedProduct.Name,
+                    updatedQuantity = updatedProduct.Quantity,
+                    updatedPrice = updatedProduct.Price,
+                    updatedCurrency = updatedProduct.Currency.ToString(),
+                    productOldName = oldName
+                };
+                using SqlConnection connection = OpenConnection();
+                string updateQuery = @"
+                                 UPDATE Product
+                                 SET 
+                                    Name = @updatedName,
+                                    Quantity = @updatedQuantity,
+                                    Price = @updatedPrice,
+                                    Currency = @updatedCurrency                              
+                                 WHERE
+                                    Name = @productOldName";
+                int rowsAffected = connection.Execute(updateQuery, parameters);
+                connection.Close();
+                return rowsAffected > 0;
+            }
+            return false;
+        }
     }
 }
 
