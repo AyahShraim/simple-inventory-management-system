@@ -5,9 +5,9 @@ namespace SimpleInventoryManagementSystem.UI
 {
     public class InventoryUI
     {
-        private Inventory _inventory;
+        private InventoryRepository _inventory;
         private IWriter _writer;
-        public InventoryUI(Inventory inventory, IWriter writer)
+        public InventoryUI(InventoryRepository inventory, IWriter writer)
         {
             _inventory = inventory;
             _writer = writer;
@@ -24,7 +24,7 @@ namespace SimpleInventoryManagementSystem.UI
                 if (IsValidProduct(newProduct))
                 {
                     bool isSuccess = _inventory.AddProduct(newProduct);
-                    if (isSuccess) _writer.Write($"Product {name} added successfully. ID: {newProduct.GetProductId()}\n");
+                    if (isSuccess) _writer.Write($"Product {name} added successfully\n");
                     else _writer.Write("Product already exist!\n");
                 }
                 return;
@@ -59,11 +59,9 @@ namespace SimpleInventoryManagementSystem.UI
             }
             return price;
         }
-
         private CurrencyType ReadProductCurrency()
         {
             _writer.Write("Enter product currency (USD, EUR, GBP): ");
-
             while (true)
             {
                 string input = Console.ReadLine()?.Trim().ToUpper(); // Convert to uppercase for case-insensitivity
@@ -92,7 +90,12 @@ namespace SimpleInventoryManagementSystem.UI
         public void ViewAllProducts()
         {
             List<Product> products = _inventory.GetAllProducts();
-            products.ForEach(product => _writer.Write($"\n{product}"));
+            if(products.Count > 0)
+            {
+                products.ForEach(product => _writer.Write($"\n{product}"));
+                return;
+            }
+            _writer.Write("\nNo products in the inventory");   
         }
         public void ViewProduct()
         {
@@ -118,22 +121,31 @@ namespace SimpleInventoryManagementSystem.UI
             else
             {
                 _writer.Write($"\nCouldn't find product {productName} in the inventory! Please recheck the name.");
-
             }
         }
         public void UpdateProduct()
         {
             string productToUpdateName= ReadProductName();
-            Product productToUpdate = _inventory.SearchProduct(productToUpdateName);
-            if (productToUpdate != null)
-            {
-                Product updatedProduct = ReadUpdatedProduct();
-                UpdateProductInfo(productToUpdate, updatedProduct);
-            }
-            else
+            if (!_inventory.IsExistProduct(productToUpdateName))
             {
                 _writer.Write($"\nCouldn't find product {productToUpdateName} in the inventory! Please recheck the name.");
             }
+            else
+            {
+                Product updatedProduct = ReadUpdatedProduct();
+                if (IsValidProduct(updatedProduct))
+                {
+                    bool isSuccess = _inventory.UpdateProduct(productToUpdateName, updatedProduct);
+                    if (isSuccess)
+                    {
+                        _writer.Write($"\nProduct {productToUpdateName} updated successfully!");
+                    }
+                    else
+                    {
+                        _writer.Write($"\nCheck the new product data (Note: you can't update name to already exist name)");
+                    }
+                }
+            }      
         }
         private Product ReadUpdatedProduct()
         {
@@ -142,21 +154,6 @@ namespace SimpleInventoryManagementSystem.UI
             decimal price = ReadProductPrice();
             CurrencyType currency = ReadProductCurrency();
             return new Product(name, quantity, price, currency);
-        }
-        private void UpdateProductInfo(Product productToUpdate, Product updatedProduct)
-        {
-            if (IsValidProduct(updatedProduct))
-            {
-                bool isSuccess = _inventory.UpdateProduct(productToUpdate, updatedProduct);
-                if (isSuccess)
-                {
-                    _writer.Write($"\nProduct {productToUpdate.Name} updated successfully!");
-                }
-                else
-                {
-                    _writer.Write("\nUpdate failed. Please check the product information.");
-                }
-            }
-        }
+        } 
     }
 }
