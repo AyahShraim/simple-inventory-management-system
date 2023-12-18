@@ -2,13 +2,11 @@
 using SimpleInventoryManagementSystem.DataAccess;
 using System.Data.SqlClient;
 
-
 namespace SimpleInventoryManagementSystem.ProductsManagement
 {
     public class InventoryRepository
     {
         private readonly IDbConnectionProvider _connectionProvider;
-        private readonly List<Product> products = new List<Product>();
         public InventoryRepository(IDbConnectionProvider connectionProvider)
         {
             _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
@@ -18,7 +16,11 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             if (!IsExistProduct(product.Name))
             {
                 using SqlConnection connection = OpenConnection();
-                string insertQuery = "INSERT INTO Product (Name, Quantity, Price, Currency) VALUES (@Name, @Quantity, @Price, @Currency)";
+                string insertQuery = @"
+                                INSERT INTO Product 
+                                    (Name, Quantity, Price, Currency) 
+                                VALUES 
+                                    (@Name, @Quantity, @Price, @Currency)";
                 int rowsAffected = connection.Execute(insertQuery, product);
                 connection.Close();
                 return rowsAffected > 0;
@@ -34,7 +36,13 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         public bool IsExistProduct(string name)
         {
             using SqlConnection connection = OpenConnection();
-            string checkExistenceQuery = "SELECT COUNT(*) FROM Product WHERE Name = @name";
+            string checkExistenceQuery = @"
+                                    SELECT
+                                        COUNT(*) 
+                                    FROM
+                                        Product 
+                                    WHERE
+                                        Name = @Name";
             var parameters = new { Name = name };
             int existingProductCount = connection.QueryFirstOrDefault<int>(checkExistenceQuery, parameters);
             connection.Close();
@@ -43,15 +51,19 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         public bool DeleteProduct(string name)
         {
             using SqlConnection connection = OpenConnection();
-            string deleteQuery = "DELETE FROM Product WHERE Name = @Name";
+            string deleteQuery = @"
+                            DELETE FROM Product 
+                            WHERE
+                                Name = @Name";
             var parameters = new { Name = name };
             int rowsAffected = connection.Execute(deleteQuery, parameters);
             connection.Close();
-            return rowsAffected > 0;          
+            return rowsAffected > 0;
+            
         }
         public bool UpdateProduct(string oldName, Product updatedProduct)
         {
-            if (!IsExistProduct(updatedProduct.Name))
+            if (CouldUpdateProduct(updatedProduct, oldName))
             {
                 var parameters = new
                 {
@@ -77,11 +89,20 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             }
             return false;
         }
+        private bool CouldUpdateProduct(Product updatedProduct, string oldName)
+        {
+            return !IsExistProduct(updatedProduct.Name) || updatedProduct.Name.Equals(oldName);
+        }
         public Product? SearchProduct(string name)
         {
             using SqlConnection connection = OpenConnection();
             var parameters = new { Name = name };
-            string selectQuery = "SELECT * FROM Product WHERE Name = @Name";
+            string selectQuery = @"
+                            SELECT *
+                            FROM
+                                Product
+                            WHERE
+                                Name = @Name";
             Product? product = connection.QueryFirstOrDefault<Product>(selectQuery, parameters);
             connection.Close();
             return product;
@@ -89,7 +110,10 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         public List<Product> GetAllProducts()
         {
             using SqlConnection connection = OpenConnection();
-            string selectQuery = "SELECT * FROM Product";
+            string selectQuery = @"
+                            SELECT *
+                            FROM
+                                Product";
             List<Product> products = connection.Query<Product>(selectQuery).ToList();
             connection.Close();
             return products;
