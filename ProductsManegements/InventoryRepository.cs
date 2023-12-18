@@ -77,6 +77,15 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             }
             return false;
         }
+        public Product? SearchProduct(string name)
+        {
+            using SqlConnection connection = OpenConnection();
+            var parameters = new { Name = name };
+            string selectQuery = "SELECT * FROM Product WHERE Name = @Name";
+            Product? product = connection.QueryFirstOrDefault<Product>(selectQuery, parameters);
+            connection.Close();
+            return product;
+        }
     }
 }
 
