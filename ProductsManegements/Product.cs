@@ -5,7 +5,8 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
 {
     public class Product
     {
-        private static int _nextId = 1;
+
+        [Key]
         public int Id { get; private set; }
 
         [Required(ErrorMessage = "The Product name is required!")]
@@ -19,17 +20,15 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
 
         public CurrencyType Currency { get; set; } = CurrencyType.USD;
 
+        public Product()
+        {
+        }
         public Product(string name, int quantity, decimal price, CurrencyType currency)
         {
             Name = name;
             Quantity = quantity;
             Price = price;
             Currency = currency;
-            Id = _nextId++;
-        }
-        public int GetProductId()
-        {
-            return Id;
         }
         public override string ToString()
         {
