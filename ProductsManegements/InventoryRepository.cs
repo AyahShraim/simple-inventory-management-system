@@ -1,20 +1,17 @@
 ﻿using Dapper;
 using SimpleInventoryManagementSystem.DataAccess;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Xml.Linq;
+
 
 namespace SimpleInventoryManagementSystem.ProductsManagement
 {
     public class InventoryRepository
     {
         private readonly IDbConnectionProvider _connectionProvider;
-      //  private readonly IDbCommandProvider _commandProvider;
         private readonly List<Product> products = new List<Product>();
         public InventoryRepository(IDbConnectionProvider connectionProvider)
         {
             _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
-           // _commandProvider = commandProvider ?? throw new ArgumentNullException(nameof(commandProvider));
         }
         public bool AddProduct(Product product)
         {
@@ -43,61 +40,7 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             connection.Close();
             return existingProductCount > 0;
         }
-        public bool DeleteProduct(string name)
-        {
-            using SqlConnection connection = OpenConnection();
-            string deleteQuery = "DELETE FROM Product WHERE Name = @Name";
-            var parameters = new { Name = name };
-            int rowsAffected = connection.Execute(deleteQuery, parameters);
-            connection.Close();
-            return rowsAffected > 0;
-            
-        }
-        public bool UpdateProduct(string oldName, Product updatedProduct)
-        {
-            if (!IsExistProduct(updatedProduct.Name))
-            {
-                var parameters = new
-                {
-                    updatedName = updatedProduct.Name,
-                    updatedQuantity = updatedProduct.Quantity,
-                    updatedPrice = updatedProduct.Price,
-                    updatedCurrency = updatedProduct.Currency.ToString(),
-                    productOldName = oldName
-                };
-                using SqlConnection connection = OpenConnection();
-                string updateQuery = @"
-                                 UPDATE Product
-                                 SET 
-                                    Name = @updatedName,
-                                    Quantity = @updatedQuantity,
-                                    Price = @updatedPrice,
-                                    Currency = @updatedCurrency                              
-                                 WHERE
-                                    Name = @productOldName";
-                int rowsAffected = connection.Execute(updateQuery, parameters);
-                connection.Close();
-                return rowsAffected > 0;
-            }
-            return false;
-        }
-        public Product? SearchProduct(string name)
-        {
-            using SqlConnection connection = OpenConnection();
-            var parameters = new { Name = name };
-            string selectQuery = "SELECT * FROM Product WHERE Name = @Name";
-            Product? product = connection.QueryFirstOrDefault<Product>(selectQuery, parameters);
-            connection.Close();
-            return product;
-        }
-        public List<Product> GetAllProducts()
-        {
-            using SqlConnection connection = OpenConnection();
-            string selectQuery = "SELECT * FROM Product";
-            List<Product> products = connection.Query<Product>(selectQuery).ToList();
-            connection.Close();
-            return products;
-        }
+
     }
 }
 
