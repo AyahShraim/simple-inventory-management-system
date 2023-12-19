@@ -53,5 +53,11 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         {
             return !IsExistProduct(updatedProduct.Name) || updatedProduct.Name.Equals(oldName);
         }
+        public Product? SearchProduct(string name)
+        {
+            var filter = Builders<Product>.Filter.Eq(product => product.Name, name);
+            var product = _productCollection.Find(filter).FirstOrDefault();
+            return product;
+        }
     }
 }
