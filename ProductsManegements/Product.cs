@@ -1,4 +1,6 @@
-﻿using SimpleInventoryManagementSystem.Utilities;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using SimpleInventoryManagementSystem.Utilities;
 using System.ComponentModel.DataAnnotations;
 
 namespace SimpleInventoryManagementSystem.ProductsManagement
@@ -6,8 +8,9 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
     public class Product
     {
 
-        [Key]
-        public int Id { get; private set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
         [Required(ErrorMessage = "The Product name is required!")]
         public string Name { get; set; }
@@ -16,13 +19,11 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         public int Quantity { get; set; }
 
         [Range(0.0, double.MaxValue, ErrorMessage = "Price can't be negative value!")]
+        [BsonRepresentation(BsonType.Decimal128)] 
         public decimal Price { get; set; }
 
         public CurrencyType Currency { get; set; } = CurrencyType.USD;
 
-        public Product()
-        {
-        }
         public Product(string name, int quantity, decimal price, CurrencyType currency)
         {
             Name = name;
