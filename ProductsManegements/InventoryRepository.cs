@@ -59,5 +59,11 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             var product = _productCollection.Find(filter).FirstOrDefault();
             return product;
         }
+        public List<Product> GetAllProducts()
+        {
+            var filter = Builders<Product>.Filter.Empty;
+            var products = _productCollection.Find(filter).ToList();
+            return products;
+        }
     }
 }
