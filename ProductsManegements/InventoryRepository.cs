@@ -27,5 +27,11 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
             var count = _productCollection.CountDocuments(filter);
             return count > 0; ;
         }
+        public bool DeleteProduct(string name)
+        {
+            var filter = Builders<Product>.Filter.Eq(product => product.Name, name);
+            var result = _productCollection.DeleteOne(filter);
+            return result.DeletedCount > 0;          
+        }
     }
 }
