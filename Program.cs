@@ -1,10 +1,13 @@
-﻿using SimpleInventoryManagementSystem.MenuCommand;
+﻿using SimpleInventoryManagementSystem.DataAccess;
+using SimpleInventoryManagementSystem.MenuCommand;
 using SimpleInventoryManagementSystem.ProductsManagement;
 using SimpleInventoryManagementSystem.UI;
 using SimpleInventoryManagementSystem.Utilities;
 
 PrintWelcome();
-Inventory inventory = new Inventory();
+string connectionString = ReadDbConnectionString();
+IDbConnectionProvider connectionProvider = new DBConnectionProvider(connectionString);
+InventoryRepository inventory = new InventoryRepository(connectionProvider);
 IWriter writer = new ConsoleWriter();
 InventoryUI inventoryUI =new InventoryUI(inventory, writer);
 MainProgramUI mainProgramUI = new MainProgramUI(inventoryUI);
@@ -24,13 +27,16 @@ void PrintWelcome()
     Console.ReadLine();
     Console.Clear();
 }
+string ReadDbConnectionString()
+{
+    return DBHelper.ConnectionString("InventoryDB");
+}
 void ShowMainMenu()
 {
     while (true)
     {
         Console.ForegroundColor = ConsoleColor.White;
         Console.ResetColor();
-        Console.WriteLine($"\nYou currently have {inventory.GetAllProducts().Count} product");
         Console.WriteLine(@"
 --------------------------
 Select an action to start ->
