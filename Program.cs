@@ -1,13 +1,14 @@
-﻿using SimpleInventoryManagementSystem.DataAccess;
+﻿using Microsoft.Extensions.Configuration;
+using SimpleInventoryManagementSystem.Database;
 using SimpleInventoryManagementSystem.MenuCommand;
 using SimpleInventoryManagementSystem.ProductsManagement;
 using SimpleInventoryManagementSystem.UI;
 using SimpleInventoryManagementSystem.Utilities;
 
 PrintWelcome();
-string connectionString = ReadDbConnectionString();
-IDbConnectionProvider connectionProvider = new DBConnectionProvider(connectionString);
-InventoryRepository inventory = new InventoryRepository(connectionProvider);
+IConfiguration configuration = DBConfigHelper.GetConfiguration();
+MongoDbContext mongoDbContext = new MongoDbContext(configuration);
+InventoryRepository inventory = new InventoryRepository(mongoDbContext.GetDatabase());
 IWriter writer = new ConsoleWriter();
 InventoryUI inventoryUI =new InventoryUI(inventory, writer);
 MainProgramUI mainProgramUI = new MainProgramUI(inventoryUI);
@@ -26,10 +27,6 @@ void PrintWelcome()
     Console.WriteLine("Press any key to start!");
     Console.ReadLine();
     Console.Clear();
-}
-string ReadDbConnectionString()
-{
-    return DBHelper.ConnectionString("InventoryDB");
 }
 void ShowMainMenu()
 {

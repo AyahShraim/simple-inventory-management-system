@@ -1,91 +1,51 @@
-﻿using Dapper;
-using SimpleInventoryManagementSystem.DataAccess;
-using System.Data.SqlClient;
+﻿using MongoDB.Driver;
 
 namespace SimpleInventoryManagementSystem.ProductsManagement
 {
     public class InventoryRepository
     {
-        private readonly IDbConnectionProvider _connectionProvider;
-        public InventoryRepository(IDbConnectionProvider connectionProvider)
+        private readonly IMongoDatabase _mongoDatabase;
+        private readonly IMongoCollection<Product> _productCollection;
+
+        public InventoryRepository(IMongoDatabase mongoDatabase)
         {
-            _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
+            _mongoDatabase = mongoDatabase;
+            _productCollection = _mongoDatabase.GetCollection<Product>("product");
         }
         public bool AddProduct(Product product)
         {
             if (!IsExistProduct(product.Name))
             {
-                using SqlConnection connection = OpenConnection();
-                string insertQuery = @"
-                                INSERT INTO Product 
-                                    (Name, Quantity, Price, Currency) 
-                                VALUES 
-                                    (@Name, @Quantity, @Price, @Currency)";
-                int rowsAffected = connection.Execute(insertQuery, product);
-                connection.Close();
-                return rowsAffected > 0;
+                _productCollection.InsertOne(product);
+                return true;
             }
             return false;
         }
-        private SqlConnection OpenConnection()
-        {
-            SqlConnection connection = _connectionProvider.GetSqlConnection();
-            connection.Open();
-            return connection;
-        }
         public bool IsExistProduct(string name)
         {
-            using SqlConnection connection = OpenConnection();
-            string checkExistenceQuery = @"
-                                    SELECT
-                                        COUNT(*) 
-                                    FROM
-                                        Product 
-                                    WHERE
-                                        Name = @Name";
-            var parameters = new { Name = name };
-            int existingProductCount = connection.QueryFirstOrDefault<int>(checkExistenceQuery, parameters);
-            connection.Close();
-            return existingProductCount > 0;
+            var filter = Builders<Product>.Filter.Eq(product=> product.Name, name);   
+            var count = _productCollection.CountDocuments(filter);
+            return count > 0; ;
         }
         public bool DeleteProduct(string name)
         {
-            using SqlConnection connection = OpenConnection();
-            string deleteQuery = @"
-                            DELETE FROM Product 
-                            WHERE
-                                Name = @Name";
-            var parameters = new { Name = name };
-            int rowsAffected = connection.Execute(deleteQuery, parameters);
-            connection.Close();
-            return rowsAffected > 0;
-            
+            var filter = Builders<Product>.Filter.Eq(product => product.Name, name);
+            var result = _productCollection.DeleteOne(filter);
+            return result.DeletedCount > 0;          
         }
         public bool UpdateProduct(string oldName, Product updatedProduct)
         {
+            var filter = Builders<Product>.Filter.Eq(product => product.Name, oldName);
             if (CouldUpdateProduct(updatedProduct, oldName))
             {
-                var parameters = new
-                {
-                    updatedName = updatedProduct.Name,
-                    updatedQuantity = updatedProduct.Quantity,
-                    updatedPrice = updatedProduct.Price,
-                    updatedCurrency = updatedProduct.Currency.ToString(),
-                    productOldName = oldName
-                };
-                using SqlConnection connection = OpenConnection();
-                string updateQuery = @"
-                                 UPDATE Product
-                                 SET 
-                                    Name = @updatedName,
-                                    Quantity = @updatedQuantity,
-                                    Price = @updatedPrice,
-                                    Currency = @updatedCurrency                              
-                                 WHERE
-                                    Name = @productOldName";
-                int rowsAffected = connection.Execute(updateQuery, parameters);
-                connection.Close();
-                return rowsAffected > 0;
+                var update = Builders<Product>.Update
+                    .Set("Name", updatedProduct.Name)
+                    .Set("Quantity", updatedProduct.Quantity)
+                    .Set("Price", updatedProduct.Price)
+                    .Set("Currency", updatedProduct.Currency.ToString());
+                     
+                var result = _productCollection.UpdateOne(filter, update);
+                return result.MatchedCount > 0;
             }
             return false;
         }
@@ -95,32 +55,15 @@ namespace SimpleInventoryManagementSystem.ProductsManagement
         }
         public Product? SearchProduct(string name)
         {
-            using SqlConnection connection = OpenConnection();
-            var parameters = new { Name = name };
-            string selectQuery = @"
-                            SELECT *
-                            FROM
-                                Product
-                            WHERE
-                                Name = @Name";
-            Product? product = connection.QueryFirstOrDefault<Product>(selectQuery, parameters);
-            connection.Close();
+            var filter = Builders<Product>.Filter.Eq(product => product.Name, name);
+            var product = _productCollection.Find(filter).FirstOrDefault();
             return product;
         }
         public List<Product> GetAllProducts()
         {
-            using SqlConnection connection = OpenConnection();
-            string selectQuery = @"
-                            SELECT *
-                            FROM
-                                Product";
-            List<Product> products = connection.Query<Product>(selectQuery).ToList();
-            connection.Close();
+            var filter = Builders<Product>.Filter.Empty;
+            var products = _productCollection.Find(filter).ToList();
             return products;
         }
     }
 }
-
-      
-
-
